@@ -5,6 +5,7 @@ const { Types, Creators } = createActions({
 	login: ["name", "apiKey"],
 	loginSuccess: ["payload"],
 	loginFail: null,
+	reset: null,
 })
 
 export const AuthTypes = Types
@@ -36,8 +37,13 @@ const loginFail = (state, action) => {
 	})
 }
 
+const reset = () => {
+	return INITIAL_STATE
+}
+
 export const auth = createReducer(INITIAL_STATE, {
 	[Types.LOGIN]: login,
 	[Types.LOGIN_SUCCESS]: loginSuccess,
 	[Types.LOGIN_FAIL]: loginFail,
+	[Types.RESET]: reset,
 })

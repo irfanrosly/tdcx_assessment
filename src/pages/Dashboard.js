@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import TodoActions from "../redux/todo"
+import AuthActions from "../redux/auth"
 import styled from "styled-components"
 import { Flex, Box } from "../components"
 import { TrashIcon, PencilIcon } from "../components/icons"
@@ -74,15 +75,20 @@ const CompletedText = styled(Box)`
 `
 
 const Dashboard = () => {
+	const dispatch = useDispatch()
+
 	const { dataDashboard, taskLists } = useSelector((state) => state.todo)
 	const { data } = useSelector((state) => state.auth)
 
 	const [showModal, setShowModal] = useState(false)
 	const [taskName, setTaskName] = useState("")
+	const [searchKeyword, setSearchKeyword] = useState("")
 
-	const dispatch = useDispatch()
+	const [filteredTaskLists, setFilteredTaskLists] = useState([])
+
 	useEffect(() => {
 		dispatch(TodoActions.getDashboard())
+		setFilteredTaskLists(taskLists)
 	}, [taskLists])
 
 	useEffect(() => {
@@ -98,6 +104,12 @@ const Dashboard = () => {
 		dispatch(TodoActions.createTask(taskName))
 	}
 
+	const filterTaskList = (e) => {
+		setSearchKeyword(e.target.value)
+		const test = filteredTaskLists.filter((data) => data.name === searchKeyword)
+		console.log(test)
+	}
+
 	return (
 		<Container>
 			<Header
@@ -110,7 +122,13 @@ const Dashboard = () => {
 				justifyContent='space-between'
 			>
 				<Box pl={["24px", "0px"]}>{data.name}</Box>
-				<Box pr={["24px", "0px"]}>Logout</Box>
+				<Box
+					pr={["24px", "0px"]}
+					style={{ cursor: "pointer" }}
+					onClick={() => dispatch(AuthActions.reset())}
+				>
+					Logout
+				</Box>
 			</Header>
 			<Flex
 				display='flex'
@@ -162,13 +180,13 @@ const Dashboard = () => {
 				display='flex'
 				flexDirection={["column", "row"]}
 			>
-				<Input placeholder='Search Task by Name' onChange={(e) => setTaskName(e.target.value)} />
+				<Input placeholder='Search Task by Name' onChange={(e) => filterTaskList(e)} />
 				<Button onClick={() => setShowModal(true)}>+ New Task</Button>
 			</Flex>
 			<Flex px={[0, 128]} pb={4}>
 				<Card>
-					{taskLists &&
-						taskLists.map((i) => {
+					{filteredTaskLists &&
+						filteredTaskLists.map((i) => {
 							return (
 								<CardContentTaskList>
 									<Box width={[0.1, 0.05]}>
