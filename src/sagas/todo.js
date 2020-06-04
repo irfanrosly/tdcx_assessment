@@ -18,7 +18,7 @@ export function* getTasks(api, action) {
 export function* createTask(api, action) {
 	const response = yield call(api.createTask, action)
 	if (response.ok) {
-		yield put(TodoActions.getTasksSuccess(response.data))
+		yield put(TodoActions.createTaskSuccess(response.data))
 	}
 }
 
@@ -26,5 +26,13 @@ export function* deleteTask(api, action) {
 	const response = yield call(api.deleteTask, action)
 	if (response.ok) {
 		yield put(TodoActions.deleteTaskSuccess())
+	}
+}
+
+export function* updateTask(api, action) {
+	console.log("saga : ", action)
+	const response = yield call(api.updateTask, action)
+	if (response.ok) {
+		yield put(TodoActions.updateTaskSuccess())
 	}
 }

@@ -3,7 +3,7 @@ import { all, takeLatest } from "redux-saga/effects"
 // Saga files
 import { searchRepo, searchUser } from "./github"
 import { login } from "./auth"
-import { getDashboard, getTasks, createTask, deleteTask } from "./todo"
+import { getDashboard, getTasks, createTask, deleteTask, updateTask } from "./todo"
 
 // Redux file
 import { GithubTypes } from "../redux/github"
@@ -23,5 +23,6 @@ export default function* rootSaga() {
 		takeLatest(TodoTypes.GET_TASKS, getTasks, api),
 		takeLatest(TodoTypes.CREATE_TASK, createTask, api),
 		takeLatest(TodoTypes.DELETE_TASK, deleteTask, api),
+		takeLatest(TodoTypes.UPDATE_TASK, updateTask, api),
 	])
 }

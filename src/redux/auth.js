@@ -13,7 +13,7 @@ export default Creators
 const INITIAL_STATE = Immutable({
 	name: "Toi",
 	apiKey: "18d4dd5c73093472",
-	data: {},
+	data: { name: "", token: "" },
 	loading: false,
 })
 

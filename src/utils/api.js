@@ -25,8 +25,8 @@ const create = () => {
 		return apiTDCX.post(`/tasks`, JSON.stringify(params))
 	}
 
-	const editTask = (params) => {
-		return apiTDCX.put(`/tasks/${params.id}`, JSON.stringify(params))
+	const updateTask = (params) => {
+		return apiTDCX.put(`/tasks/${params.payload.id}`, JSON.stringify(params.payload))
 	}
 
 	const deleteTask = (params) => {
@@ -39,7 +39,7 @@ const create = () => {
 		getDashboard,
 		getTasks,
 		createTask,
-		editTask,
+		updateTask,
 		deleteTask,
 	}
 }

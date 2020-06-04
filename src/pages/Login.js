@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import AuthActions from "../redux/auth"
 import styled from "styled-components"
-import { Flex, Box } from "../components"
+import { Box } from "../components"
 
 const Container = styled.div`
 	min-height: 100vh;
@@ -42,7 +42,7 @@ const Button = styled.button`
 
 const Login = () => {
 	const [id, setId] = useState("18d4dd5c73093472")
-	const [name, setName] = useState("Toi")
+	const [name, setName] = useState("Algo")
 	const dispatch = useDispatch()
 
 	return (

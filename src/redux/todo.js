@@ -14,6 +14,9 @@ const { Types, Creators } = createActions({
 	deleteTask: ["id"],
 	deleteTaskSuccess: null,
 	deleteTaskFail: null,
+	updateTask: ["payload"],
+	updateTaskSuccess: null,
+	updateTaskFail: null,
 })
 
 export const TodoTypes = Types
@@ -72,7 +75,7 @@ const createTask = (state, action) => {
 const createTaskSuccess = (state, action) => {
 	return state.merge({
 		loading: false,
-		taskLists: [...action.payload],
+		taskLists: [...state.taskLists, action.payload.task],
 	})
 }
 
@@ -101,6 +104,25 @@ const deleteTaskFail = (state, action) => {
 	})
 }
 
+const updateTask = (state, action) => {
+	return state.merge({
+		loading: true,
+	})
+}
+
+const updateTaskSuccess = (state, action) => {
+	return state.merge({
+		loading: false,
+		dataDashboard: { ...state, tasksCompleted: state.tasksCompleted },
+	})
+}
+
+const updateTaskFail = (state, action) => {
+	return state.merge({
+		loading: false,
+	})
+}
+
 export const todo = createReducer(INITIAL_STATE, {
 	[Types.GET_DASHBOARD]: getDashboard,
 	[Types.GET_DASHBOARD_SUCCESS]: getDashboardSuccess,
@@ -114,4 +136,7 @@ export const todo = createReducer(INITIAL_STATE, {
 	[Types.DELETE_TASK]: deleteTask,
 	[Types.DELETE_TASK_SUCCESS]: deleteTaskSuccess,
 	[Types.DELETE_TASK_FAIL]: deleteTaskFail,
+	[Types.UPDATE_TASK]: updateTask,
+	[Types.UPDATE_TASK_SUCCESS]: updateTaskSuccess,
+	[Types.UPDATE_TASK_FAIL]: updateTaskFail,
 })

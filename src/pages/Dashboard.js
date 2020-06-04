@@ -4,6 +4,7 @@ import TodoActions from "../redux/todo"
 import styled from "styled-components"
 import { Flex, Box } from "../components"
 import { TrashIcon, PencilIcon } from "../components/icons"
+import { Modal } from "@material-ui/core"
 
 const Container = styled.div`
 	background-color: #f4f4f6;
@@ -58,6 +59,14 @@ const Button = styled.button`
 	width: 270px;
 	height: 40px;
 	cursor: pointer;
+	margin: none;
+`
+
+const ModalContainer = styled(Box)`
+	background: #ffffff 0% 0% no-repeat padding-box;
+	box-shadow: 0px 3px 6px #00000029;
+	border-radius: 12px;
+	opacity: 1;
 `
 
 const CompletedText = styled(Box)`
@@ -67,6 +76,10 @@ const CompletedText = styled(Box)`
 const Dashboard = () => {
 	const { dataDashboard, taskLists } = useSelector((state) => state.todo)
 	const { data } = useSelector((state) => state.auth)
+
+	const [showModal, setShowModal] = useState(false)
+	const [taskName, setTaskName] = useState("")
+
 	const dispatch = useDispatch()
 	useEffect(() => {
 		dispatch(TodoActions.getDashboard())
@@ -76,7 +89,15 @@ const Dashboard = () => {
 		dispatch(TodoActions.getTasks())
 	}, [dataDashboard.totalTasks])
 
-	const [taskName, setTaskName] = useState("")
+	const handleClickModal = () => {
+		setShowModal(true)
+	}
+
+	const submitNewTask = () => {
+		setShowModal(false)
+		dispatch(TodoActions.createTask(taskName))
+	}
+
 	return (
 		<Container>
 			<Header
@@ -93,31 +114,41 @@ const Dashboard = () => {
 			</Header>
 			<Flex
 				display='flex'
-				flexDirection={["column", "row"]}
+				flexDirection={["column", "column", "row"]}
 				justifyContent='space-between'
 				px={[0, 128]}
 			>
-				<Card width={[1, "302px"]}>
+				<Card width={[1, 1, 0.3]}>
 					<CardContent>
 						<span style={{ fontSize: 20, color: "#537178" }}>Task Completed</span>
 						<div style={{ fontSize: 20 }}>
-							<span style={{ fontSize: 64, color: "#5285EC" }}>{dataDashboard.tasksCompleted}</span>{" "}
-							/ {dataDashboard.totalTasks}
+							<span style={{ fontSize: 64, color: "#5285EC" }}>
+								{dataDashboard.tasksCompleted && dataDashboard.tasksCompleted}
+							</span>{" "}
+							{dataDashboard.totalTasks && `/ ${dataDashboard.totalTasks}`}
 						</div>
 					</CardContent>
 				</Card>
-				<Card width={[1, "302px"]}>
+				<Card width={[1, 1, 0.3]}>
 					<CardContent>
 						<span style={{ fontSize: 20, color: "#537178" }}>Latest Task Created</span>
 						<ul style={{ paddingLeft: 24 }}>
 							{dataDashboard.latestTasks &&
-								dataDashboard.latestTasks.map((i) => {
-									return <li style={{ fontSize: 14, color: "#8F9EA2" }}>{i.name}</li>
+								dataDashboard.latestTasks.map((i, idx) => {
+									if (i.completed) {
+										return (
+											<Box color='#537178' textDecorationLine='line-through' fontSize={14}>
+												<li>{i.name}</li>
+											</Box>
+										)
+									} else {
+										return <li style={{ fontSize: 14, color: "#8F9EA2" }}>{i.name}</li>
+									}
 								})}
 						</ul>
 					</CardContent>
 				</Card>
-				<Card width={[1, "302px"]}>
+				<Card width={[1, 1, 0.3]}>
 					<CardContent>
 						<span style={{ fontSize: 20 }}>Task Completion Chart</span>
 					</CardContent>
@@ -132,16 +163,22 @@ const Dashboard = () => {
 				flexDirection={["column", "row"]}
 			>
 				<Input placeholder='Search Task by Name' onChange={(e) => setTaskName(e.target.value)} />
-				<Button onClick={() => alert("Open Modal")}>+ New Task</Button>
+				<Button onClick={() => setShowModal(true)}>+ New Task</Button>
 			</Flex>
-			<Flex px={[0, 128]}>
+			<Flex px={[0, 128]} pb={4}>
 				<Card>
 					{taskLists &&
 						taskLists.map((i) => {
 							return (
 								<CardContentTaskList>
 									<Box width={[0.1, 0.05]}>
-										<input type='checkbox' checked={i.completed} />
+										<input
+											type='checkbox'
+											checked={i.completed}
+											onChange={() =>
+												dispatch(TodoActions.updateTask({ completed: !i.completed, id: i._id }))
+											}
+										/>
 									</Box>
 									{i.completed ? (
 										<CompletedText
@@ -164,10 +201,13 @@ const Dashboard = () => {
 										alignItems='center'
 										pt={3}
 									>
-										<Box onClick={() => alert("Pencil")}>
+										<Box onClick={() => alert("Edit Coming")} style={{ cursor: "pointer" }}>
 											<PencilIcon width={30} height={30} />
 										</Box>
-										<Box onClick={() => dispatch(TodoActions.deleteTask(i._id))}>
+										<Box
+											onClick={() => dispatch(TodoActions.deleteTask(i._id))}
+											style={{ cursor: "pointer" }}
+										>
 											<TrashIcon width={30} height={30} />
 										</Box>
 									</Box>
@@ -176,6 +216,24 @@ const Dashboard = () => {
 						})}
 				</Card>
 			</Flex>
+			<Modal open={showModal} onClose={handleClickModal}>
+				<Box width={1} height={"100vh"} display='flex' alignItems='center' justifyContent='center'>
+					<ModalContainer width={300} bg='white' px={4} py={4}>
+						<div>+ New Modal</div>
+						<Input
+							style={{ marginTop: 32, width: 276 }}
+							placeholder='Task Name'
+							onChange={(e) => setTaskName(e.target.value)}
+						/>
+						<Button
+							style={{ marginLeft: 0, marginRight: 0, width: "100%" }}
+							onClick={() => submitNewTask()}
+						>
+							+ New Task
+						</Button>
+					</ModalContainer>
+				</Box>
+			</Modal>
 		</Container>
 	)
 }
