@@ -30,7 +30,6 @@ export function* deleteTask(api, action) {
 }
 
 export function* updateTask(api, action) {
-	console.log("saga : ", action)
 	const response = yield call(api.updateTask, action)
 	if (response.ok) {
 		yield put(TodoActions.updateTaskSuccess())

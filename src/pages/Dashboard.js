@@ -6,6 +6,7 @@ import styled from "styled-components"
 import { Flex, Box } from "../components"
 import { TrashIcon, PencilIcon } from "../components/icons"
 import { Modal } from "@material-ui/core"
+import { PieChart } from "react-minimal-pie-chart"
 
 const Container = styled.div`
 	background-color: #f4f4f6;
@@ -82,7 +83,6 @@ const Dashboard = () => {
 
 	const [showModal, setShowModal] = useState(false)
 	const [taskName, setTaskName] = useState("")
-	const [searchKeyword, setSearchKeyword] = useState("")
 
 	const [filteredTaskLists, setFilteredTaskLists] = useState([])
 
@@ -105,9 +105,14 @@ const Dashboard = () => {
 	}
 
 	const filterTaskList = (e) => {
-		setSearchKeyword(e.target.value)
-		const test = filteredTaskLists.filter((data) => data.name === searchKeyword)
-		console.log(test)
+		if (e.target.value.length > 2) {
+			const newData = filteredTaskLists.filter((a) =>
+				a.name.toLowerCase().includes(e.target.value.toLowerCase())
+			)
+			setFilteredTaskLists(newData)
+		} else {
+			setFilteredTaskLists(taskLists)
+		}
 	}
 
 	return (
@@ -155,12 +160,21 @@ const Dashboard = () => {
 								dataDashboard.latestTasks.map((i, idx) => {
 									if (i.completed) {
 										return (
-											<Box color='#537178' textDecorationLine='line-through' fontSize={14}>
+											<CompletedText
+												key={idx}
+												color='#537178'
+												textDecorationLine='line-through'
+												fontSize={14}
+											>
 												<li>{i.name}</li>
-											</Box>
+											</CompletedText>
 										)
 									} else {
-										return <li style={{ fontSize: 14, color: "#8F9EA2" }}>{i.name}</li>
+										return (
+											<li key={idx} style={{ fontSize: 14, color: "#8F9EA2" }}>
+												{i.name}
+											</li>
+										)
 									}
 								})}
 						</ul>
@@ -168,7 +182,13 @@ const Dashboard = () => {
 				</Card>
 				<Card width={[1, 1, 0.3]}>
 					<CardContent>
-						<span style={{ fontSize: 20 }}>Task Completion Chart</span>
+						<PieChart
+							style={{ height: "100px" }}
+							data={[
+								{ title: "Completed", value: dataDashboard.tasksCompleted, color: "#5285EC" },
+								{ title: "Not Completed", value: dataDashboard.totalTasks, color: "#E8ECEC" },
+							]}
+						/>
 					</CardContent>
 				</Card>
 			</Flex>
@@ -185,10 +205,10 @@ const Dashboard = () => {
 			</Flex>
 			<Flex px={[0, 128]} pb={4}>
 				<Card>
-					{filteredTaskLists &&
-						filteredTaskLists.map((i) => {
+					{filteredTaskLists ? (
+						filteredTaskLists.map((i, idx) => {
 							return (
-								<CardContentTaskList>
+								<CardContentTaskList key={idx}>
 									<Box width={[0.1, 0.05]}>
 										<input
 											type='checkbox'
@@ -231,7 +251,10 @@ const Dashboard = () => {
 									</Box>
 								</CardContentTaskList>
 							)
-						})}
+						})
+					) : (
+						<CardContentTaskList>No task found</CardContentTaskList>
+					)}
 				</Card>
 			</Flex>
 			<Modal open={showModal} onClose={handleClickModal}>
