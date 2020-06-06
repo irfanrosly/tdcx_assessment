@@ -41,8 +41,8 @@ const Button = styled.button`
 `
 
 const Login = () => {
-	const [id, setId] = useState("18d4dd5c73093472")
-	const [name, setName] = useState("Algo")
+	const [id, setId] = useState("")
+	const [name, setName] = useState("")
 	const dispatch = useDispatch()
 
 	return (
@@ -61,7 +61,7 @@ const Login = () => {
 				</Box>
 				<Input placeholder='Id' name='id' onChange={(e) => setId(e.target.value)} />
 				<Input placeholder='Name' name='name' onChange={(e) => setName(e.target.value)} />
-				<Button onClick={() => dispatch(AuthActions.login(name, id))}>Login</Button>
+				<Button onClick={() => dispatch(AuthActions.login(id, name))}>Login</Button>
 			</Card>
 		</Container>
 	)

@@ -88,11 +88,13 @@ const Dashboard = () => {
 	const [editName, setEditName] = useState("")
 	const [filteredTaskLists, setFilteredTaskLists] = useState([])
 
+	// eslint-disable-next-line
 	useEffect(() => {
 		dispatch(TodoActions.getDashboard())
 		setFilteredTaskLists(taskLists)
 	}, [taskLists])
 
+	// eslint-disable-next-line
 	useEffect(() => {
 		dispatch(TodoActions.getTasks())
 		if (dataDashboard.totalTasks <= 0) {
@@ -153,132 +155,143 @@ const Dashboard = () => {
 					Logout
 				</Box>
 			</Header>
-			{dataDashboard.totalTasks > 0 && (
-				<>
-					<Flex
-						display='flex'
-						flexDirection={["column", "column", "row"]}
-						justifyContent='space-between'
-						px={[0, 128]}
-					>
-						<Card width={[1, 1, 0.3]}>
-							<CardContent>
-								<span style={{ fontSize: 20, color: "#537178" }}>Task Completed</span>
-								<div style={{ fontSize: 20 }}>
-									<span style={{ fontSize: 64, color: "#5285EC" }}>
-										{dataDashboard.tasksCompleted && dataDashboard.tasksCompleted}
-									</span>{" "}
-									{dataDashboard.totalTasks && `/ ${dataDashboard.totalTasks}`}
-								</div>
-							</CardContent>
-						</Card>
-						<Card width={[1, 1, 0.3]}>
-							<CardContent>
-								<span style={{ fontSize: 20, color: "#537178" }}>Latest Task Created</span>
-								<ul style={{ paddingLeft: 24 }}>
-									{dataDashboard.latestTasks &&
-										dataDashboard.latestTasks.map((i, idx) => {
-											if (i.completed) {
-												return (
-													<CompletedText
-														key={idx}
-														color='#537178'
-														textDecorationLine='line-through'
-														fontSize={14}
-													>
-														<li>{i.name}</li>
-													</CompletedText>
-												)
-											} else {
-												return (
-													<li key={idx} style={{ fontSize: 14, color: "#8F9EA2" }}>
-														{i.name}
-													</li>
-												)
-											}
-										})}
-								</ul>
-							</CardContent>
-						</Card>
-						<Card width={[1, 1, 0.3]}>
-							<CardContent>
-								<PieChart
-									style={{ height: "100px" }}
-									data={[
-										{ title: "Completed", value: dataDashboard.tasksCompleted, color: "#5285EC" },
-										{ title: "Not Completed", value: dataDashboard.totalTasks, color: "#E8ECEC" },
-									]}
-								/>
-							</CardContent>
-						</Card>
-					</Flex>
-					<Flex
-						pt={2}
-						px={[0, 128]}
-						alignItems='center'
-						justifyContent={["center", "flex-end"]}
-						display='flex'
-						flexDirection={["column", "row"]}
-					>
-						<Input placeholder='Search Task by Name' onChange={(e) => filterTaskList(e)} />
-						<Button onClick={() => setShowModal(true)}>+ New Task</Button>
-					</Flex>
-					<Flex px={[0, 128]} pb={4}>
-						<Card>
-							{filteredTaskLists ? (
-								filteredTaskLists.map((i, idx) => {
-									return (
-										<CardContentTaskList key={idx}>
-											<Box width={[0.1, 0.05]}>
-												<input
-													type='checkbox'
-													checked={i.completed}
-													onChange={() =>
-														dispatch(TodoActions.updateTask({ completed: !i.completed, id: i._id }))
-													}
-												/>
-											</Box>
-											{i.completed ? (
+			<>
+				<Flex
+					display='flex'
+					flexDirection={["column", "column", "row"]}
+					justifyContent='space-between'
+					px={[0, 128]}
+				>
+					<Card width={[1, 1, 0.3]}>
+						<CardContent>
+							<span style={{ fontSize: 20, color: "#537178" }}>Task Completed</span>
+							<div style={{ fontSize: 20 }}>
+								<span style={{ fontSize: 64, color: "#5285EC" }}>
+									{dataDashboard.tasksCompleted && dataDashboard.tasksCompleted}
+								</span>{" "}
+								{dataDashboard.totalTasks && `/ ${dataDashboard.totalTasks}`}
+							</div>
+						</CardContent>
+					</Card>
+					<Card width={[1, 1, 0.3]}>
+						<CardContent>
+							<span style={{ fontSize: 20, color: "#537178" }}>Latest Task Created</span>
+							<ul style={{ paddingLeft: 24 }}>
+								{dataDashboard.latestTasks &&
+									dataDashboard.latestTasks.map((i, idx) => {
+										if (i.completed) {
+											return (
 												<CompletedText
-													width={[0.75, 0.8]}
-													fontSize={20}
+													key={idx}
 													color='#537178'
 													textDecorationLine='line-through'
+													fontSize={14}
 												>
-													{i.name}
+													<li>{i.name}</li>
 												</CompletedText>
-											) : (
-												<Box width={[0.75, 0.8]} fontSize={20} color='#5285EC'>
+											)
+										} else {
+											return (
+												<li key={idx} style={{ fontSize: 14, color: "#8F9EA2" }}>
 													{i.name}
-												</Box>
-											)}
-											<Box
-												width={0.15}
-												display='flex'
-												justifyContent='center'
-												alignItems='center'
-												pt={3}
+												</li>
+											)
+										}
+									})}
+							</ul>
+						</CardContent>
+					</Card>
+					<Card width={[1, 1, 0.3]}>
+						<CardContent>
+							<PieChart
+								style={{ height: "100px" }}
+								data={[
+									{
+										title: "Completed",
+										value: dataDashboard.tasksCompleted,
+										color: "#5285EC",
+									},
+									{
+										title: "Not Completed",
+										value: dataDashboard.totalTasks - dataDashboard.tasksCompleted,
+										color: "#E8ECEC",
+									},
+								]}
+							/>
+						</CardContent>
+					</Card>
+				</Flex>
+				<Flex
+					pt={2}
+					px={[0, 128]}
+					alignItems='center'
+					justifyContent={["center", "flex-end"]}
+					display='flex'
+					flexDirection={["column", "row"]}
+				>
+					<Input placeholder='Search Task by Name' onChange={(e) => filterTaskList(e)} />
+					<Button onClick={() => setShowModal(true)}>+ New Task</Button>
+				</Flex>
+				<Flex px={[0, 128]} pb={4}>
+					<Card>
+						{filteredTaskLists ? (
+							filteredTaskLists.map((i, idx) => {
+								return (
+									<CardContentTaskList key={idx}>
+										<Box width={[0.1, 0.05]}>
+											<input
+												type='checkbox'
+												checked={i.completed}
+												onChange={() =>
+													dispatch(
+														TodoActions.updateTask({
+															completed: !i.completed,
+															id: i._id,
+														})
+													)
+												}
+											/>
+										</Box>
+										{i.completed ? (
+											<CompletedText
+												width={[0.75, 0.8]}
+												fontSize={20}
+												color='#537178'
+												textDecorationLine='line-through'
 											>
-												<Box onClick={() => clickEdit(i._id, i.name)} style={{ cursor: "pointer" }}>
-													<PencilIcon width={30} height={30} />
-												</Box>
-												<Box
-													onClick={() => dispatch(TodoActions.deleteTask(i._id))}
-													style={{ cursor: "pointer" }}
-												>
-													<TrashIcon width={30} height={30} />
-												</Box>
+												{i.name}
+											</CompletedText>
+										) : (
+											<Box width={[0.75, 0.8]} fontSize={20} color='#5285EC'>
+												{i.name}
 											</Box>
-										</CardContentTaskList>
-									)
-								})
-							) : (
-								<CardContentTaskList>No task found</CardContentTaskList>
-							)}
-						</Card>
-					</Flex>
-				</>
-			)}
+										)}
+										<Box
+											width={0.15}
+											display='flex'
+											justifyContent='center'
+											alignItems='center'
+											pt={3}
+										>
+											<Box onClick={() => clickEdit(i._id, i.name)} style={{ cursor: "pointer" }}>
+												<PencilIcon width={30} height={30} />
+											</Box>
+											<Box
+												onClick={() => dispatch(TodoActions.deleteTask(i._id))}
+												style={{ cursor: "pointer" }}
+											>
+												<TrashIcon width={30} height={30} />
+											</Box>
+										</Box>
+									</CardContentTaskList>
+								)
+							})
+						) : (
+							<CardContentTaskList>No task found</CardContentTaskList>
+						)}
+					</Card>
+				</Flex>
+			</>
 			<Modal open={showModal} onClose={handleClickModal}>
 				{modalType === "new" ? (
 					<Box
